@@ -9,13 +9,21 @@ const Header = () => {
         p-5 shadow-sm"
       >
         <Image src="./logo.svg" width={50} height={50} alt="logo" />
-        <ul>
-          <li>Product</li>
-          <li>Pricing</li>
-          <li>Contact us</li>
-          <li>About Us</li>
+        <ul className="hidden md:flex gap-14 font-medium text-lg ">
+          <li className="hover:text-primary transition-all duration-300 cursor-pointer">
+            Product
+          </li>
+          <li className="hover:text-primary transition-all duration-300 cursor-pointer">
+            Pricing
+          </li>
+          <li className="hover:text-primary transition-all duration-300 cursor-pointer">
+            Contact us
+          </li>
+          <li className="hover:text-primary transition-all duration-300 cursor-pointer">
+            About Us
+          </li>
         </ul>
-        <div>
+        <div className="flex gap-5">
           <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
             Login
           </button>
