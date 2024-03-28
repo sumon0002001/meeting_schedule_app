@@ -1,11 +1,8 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import Header from "./_components/Header";
+
 
 export default function Home() {
-  return (
-    <div>
-      App
-      <Button>click me</Button>
-    </div>
-  );
+  return <div>
+<Header/>
+  </div>;
 }
