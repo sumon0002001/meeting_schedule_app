@@ -6,31 +6,28 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { app } from "@/config/FirebaseConfig";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const CreateBusiness = () => {
   const [businessName, setBusinessName] = useState("");
   const db = getFirestore(app);
-  const {user } = useKindeBrowserClient()
-  const router = useRouter()
+  const { user } = useKindeBrowserClient();
+  const router = useRouter();
 
   const onCreateBusiness = async () => {
     console.log("clicked", businessName);
     await setDoc(doc(db, "Business", user.email), {
-      businessName:businessName.replace(" ","_"),
-      email:user.email,
-      userName:user.given_name+" "+user.family_name
-    }).then (Response => {
-      console.log("response", Response)
-      console.log("document saved")
-     
-      router.replace("/dashboard")
-    }
-      
-    )
-    
-
+      businessName: businessName.replace(" ", "_"),
+      email: user.email,
+      userName: user.given_name + " " + user.family_name,
+    }).then((Response) => {
+      console.log("response", Response);
+      console.log("document saved");
+      toast("New Business Created!");
+      router.replace("/dashboard");
+    });
   };
   return (
     <div className="p-14 items-center flex flex-col gap-20 my-10">
