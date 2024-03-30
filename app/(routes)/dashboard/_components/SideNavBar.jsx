@@ -37,17 +37,17 @@ const SideNavBar = () => {
 
   const path = usePathname();
   const [activePath, setActivePath] = useState(path);
-  
-  useEffect(()=>{
-    path&&setActivePath(path)
-},[path])
+
+  useEffect(() => {
+    path && setActivePath(path);
+  }, [path]);
 
   return (
     <div className="p-5 py-14">
       <div className="flex justify-center">
         <Image src="/logo.svg" alt="logo" width={100} height={100} />
       </div>
-      <Link href="/">
+      <Link href="/create-meeting">
         <Button
           className="flex gap-2 w-full 
                 mt-7

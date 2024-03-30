@@ -8,6 +8,7 @@ import { getFirestore } from "firebase/firestore";
 import { app } from "@/config/FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import MeetingType from "./meeting-type/page";
 
 const Dashboard = () => {
   const db = getFirestore(app);
@@ -36,7 +37,7 @@ const Dashboard = () => {
   if (loading) {
     return <h2>Loading...</h2>;
   }
-  return <div>Meeting Type</div>;
+  return <div><MeetingType/></div>;
 };
 
 export default Dashboard;
