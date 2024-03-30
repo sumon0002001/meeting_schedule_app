@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import LocationOption from "@/app/_utils/LocationOption";
+import ThemeOptions from "@/app/_utils/ThemeOptions";
 
 const MeetingForm = () => {
   const [eventName, setEventName] = useState("");
@@ -79,6 +80,16 @@ const MeetingForm = () => {
             <Input placeholder="Add Url" />
           </>
         )}
+        <h2 className="font-bold">Select Theme Color</h2>
+        <div className="flex justify-evenly">
+          {ThemeOptions.map((color, index) => (
+            <div
+              key={index}
+              className="h-5 w-5 rounded-full"
+              style={{ backgroundColor: color }}
+            ></div>
+          ))}
+        </div>
       </div>
       <Button className="w-full mt-9">Create</Button>
     </div>
