@@ -36,12 +36,7 @@ const Dashboard = () => {
   if (loading) {
     return <h2>Loading...</h2>;
   }
-  return (
-    <div>
-      dashboard
-      <LogoutLink>Log out</LogoutLink>
-    </div>
-  );
+  return <div>Meeting Type</div>;
 };
 
 export default Dashboard;
