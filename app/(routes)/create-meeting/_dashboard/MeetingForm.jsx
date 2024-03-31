@@ -20,6 +20,10 @@ const MeetingForm = () => {
   const [eventName, setEventName] = useState("");
   const [location, setLocation] = useState("");
   const [locationType, setLocationType] = useState("");
+  const [themeColor, setThemeColor] = useState("");
+  const [duration, setDuration] = useState("");
+  const [locationUrl, setLocationUrl] = useState("");
+
   return (
     <div className="p-8">
       <Link href={"/dashboard"}>
@@ -46,10 +50,18 @@ const MeetingForm = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>Duration</DropdownMenuLabel>
-            <DropdownMenuItem>15 min</DropdownMenuItem>
-            <DropdownMenuItem>30 min</DropdownMenuItem>
-            <DropdownMenuItem>45 min</DropdownMenuItem>
-            <DropdownMenuItem>1 hour</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDuration(15)}>
+              15 min
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDuration(30)}>
+              30 min
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDuration(45)}>
+              45 min
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDuration(60)}>
+              60 min
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <h2>Location *</h2>
@@ -85,13 +97,20 @@ const MeetingForm = () => {
           {ThemeOptions.map((color, index) => (
             <div
               key={index}
-              className="h-5 w-5 rounded-full"
+              className={`h-7 w-7 rounded-full
+                    ${themeColor == color && " border-4 border-black"}`}
               style={{ backgroundColor: color }}
+              onClick={() => setThemeColor(color)}
             ></div>
           ))}
         </div>
       </div>
-      <Button className="w-full mt-9">Create</Button>
+      <Button
+        className="w-full mt-9"
+        disabled={!eventName || !duration || !locationType || !locationUrl}
+      >
+        Create
+      </Button>
     </div>
   );
 };
