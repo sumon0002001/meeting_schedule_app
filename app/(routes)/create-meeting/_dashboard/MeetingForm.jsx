@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
@@ -16,16 +16,31 @@ import { Button } from "@/components/ui/button";
 import LocationOption from "@/app/_utils/LocationOption";
 import ThemeOptions from "@/app/_utils/ThemeOptions";
 
-const MeetingForm = () => {
+const MeetingForm = ({ setFormValue }) => {
   const [eventName, setEventName] = useState("");
   const [location, setLocation] = useState("");
   const [locationType, setLocationType] = useState("");
   const [themeColor, setThemeColor] = useState("");
-  const [duration, setDuration] = useState("");
+  const [duration, setDuration] = useState(30);
   const [locationUrl, setLocationUrl] = useState("");
 
+  useEffect(() => {
+    setFormValue({
+      eventName: eventName,
+      locationType : locationType,
+      themeColor : themeColor,
+      duration:duration,
+      locationUrl: locationUrl
+    
+    })
+  }, [eventName, locationType, themeColor, duration, locationUrl]);
+
+  const onCreateClick = () => {
+    alert("event is ceated");
+  };
+
   return (
-    <div className="p-8">
+    <div className="p-8 ">
       <Link href={"/dashboard"}>
         <h2 className="flex gap-2">
           <ChevronLeft /> Cancel
@@ -33,7 +48,7 @@ const MeetingForm = () => {
       </Link>
       <div className="mt-4">
         <h2 className="font-bold text-2xl my-4">Create New Event</h2>
-        <hr />
+        <hr></hr>
       </div>
       <div className="flex flex-col gap-3 my-4">
         <h2 className="font-bold">Event Name *</h2>
@@ -41,40 +56,45 @@ const MeetingForm = () => {
           placeholder="Name of your meeting event"
           onChange={(event) => setEventName(event.target.value)}
         />
+
         <h2 className="font-bold">Duration *</h2>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="max-w-40">
-              Duration Min
+              {duration} Min
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Duration</DropdownMenuLabel>
+          <DropdownMenuContent>
             <DropdownMenuItem onClick={() => setDuration(15)}>
-              15 min
+              15 Min
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDuration(30)}>
-              30 min
+              30 Min
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDuration(45)}>
-              45 min
+              45 Min
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDuration(60)}>
-              60 min
+              60 Min
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <h2>Location *</h2>
+
+        <h2 className="font-bold">Location *</h2>
         <div className="grid grid-cols-4 gap-3">
           {LocationOption.map((option, index) => (
             <div
               key={index}
               className={`border flex flex-col
-            justify-center items-center 
-            p-3 rounded-lg cursor-pointer
-            hover:bg-blue-100 hover:border-primary
-            ${location == option.name && "bg-blue-100 border-primary"}`}
-              onClick={() => setLocation(option.name)}
+                     justify-center items-center 
+                     p-3 rounded-lg cursor-pointer
+                     hover:bg-blue-100 hover:border-primary
+                     ${
+                       locationType == option.name &&
+                       "bg-blue-100 border-primary"
+                     }`}
+              onClick={() => setLocationType(option.name)}
             >
               <Image
                 src={option.icon}
@@ -86,10 +106,13 @@ const MeetingForm = () => {
             </div>
           ))}
         </div>
-        {location && (
+        {locationType && (
           <>
-            <h2 className="font-bold">Add {location} Url</h2>
-            <Input placeholder="Add Url" />
+            <h2 className="font-bold">Add {locationUrl} *</h2>
+            <Input
+              placeholder="Add Url"
+              onChange={(event) => setLocationUrl(event.target.value)}
+            />
           </>
         )}
         <h2 className="font-bold">Select Theme Color</h2>
@@ -105,9 +128,11 @@ const MeetingForm = () => {
           ))}
         </div>
       </div>
+
       <Button
         className="w-full mt-9"
         disabled={!eventName || !duration || !locationType || !locationUrl}
+        onClick={() => onCreateClick()}
       >
         Create
       </Button>
