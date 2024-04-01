@@ -15,6 +15,11 @@ import {
 import { Button } from "@/components/ui/button";
 import LocationOption from "@/app/_utils/LocationOption";
 import ThemeOptions from "@/app/_utils/ThemeOptions";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { app } from "@/config/FirebaseConfig";
+import { toast } from "sonner";
 
 const MeetingForm = ({ setFormValue }) => {
   const [eventName, setEventName] = useState("");
@@ -23,20 +28,34 @@ const MeetingForm = ({ setFormValue }) => {
   const [themeColor, setThemeColor] = useState("");
   const [duration, setDuration] = useState(30);
   const [locationUrl, setLocationUrl] = useState("");
+  const { user } = useKindeBrowserClient();
+  const db = getFirestore(app);
+  const router = useRouter();
 
   useEffect(() => {
     setFormValue({
       eventName: eventName,
-      locationType : locationType,
-      themeColor : themeColor,
-      duration:duration,
-      locationUrl: locationUrl
-    
-    })
+      locationType: locationType,
+      themeColor: themeColor,
+      duration: duration,
+      locationUrl: locationUrl,
+    });
   }, [eventName, locationType, themeColor, duration, locationUrl]);
 
-  const onCreateClick = () => {
-    alert("event is ceated");
+  const onCreateClick = async () => {
+    const id = Date.now().toString();
+    await setDoc(doc(db, "MeetingEvent", id), {
+      id: id,
+      eventName: eventName,
+      locationType: locationType,
+      themeColor: themeColor,
+      duration: duration,
+      locationUrl: locationUrl,
+      businessId: doc(db, "Business", user?.email),
+      createdBy: user?.email,
+    });
+    toast("New Meeting Event is created successfully");
+    router.push("/dashboard/meeting-type");
   };
 
   return (

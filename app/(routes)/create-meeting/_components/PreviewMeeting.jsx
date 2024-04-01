@@ -29,13 +29,14 @@ const PreviewMeeting = ({ formValue }) => {
       ).padStart(2, "0")} ${period}`;
     });
 
-    console.log(slots);
     setTimeSlots(slots);
   };
 
   return (
-    <div className="p-5 py-5 shadow-lg m-5 border-t-8" style={{ borderTopColor: formValue?.themeColor }}>
-      
+    <div
+      className="p-5 py-5 shadow-lg m-5 border-t-8"
+      style={{ borderTopColor: formValue?.themeColor }}
+    >
       <Image src="/logo.svg" alt="logo" width={100} height={100} />
       <div className="grid grid-cols-1 md:grid-cols-3 mt-5">
         {/* Meeting info */}
