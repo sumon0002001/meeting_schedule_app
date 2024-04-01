@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import React from "react";
+import MeetingEventList from "./_component/MeetingEventList";
 
 const MeetingType = () => {
   return (
@@ -9,6 +10,8 @@ const MeetingType = () => {
         <Input placeholder="Search" className="max-w-xs" />
         <hr></hr>
       </div>
+      {/* Meeting event list */}
+      <MeetingEventList />
     </div>
   );
 };

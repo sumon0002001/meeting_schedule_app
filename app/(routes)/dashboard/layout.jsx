@@ -1,6 +1,7 @@
 import React from "react";
 import SideNavBar from "./_components/SideNavBar";
 import DashboardHeader from "./_components/DashboardHeader";
+import { Toaster } from "@/components/ui/sonner";
 
 const DashboardLayout = ({ children }) => {
   return (
@@ -10,6 +11,7 @@ const DashboardLayout = ({ children }) => {
       </div>
       <div className="md:ml-64">
         <DashboardHeader />
+        <Toaster />
         {children}
       </div>
     </div>
