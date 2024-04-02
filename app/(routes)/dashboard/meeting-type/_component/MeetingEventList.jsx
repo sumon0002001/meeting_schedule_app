@@ -16,6 +16,14 @@ import {
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MeetingEventList = () => {
   const db = getFirestore(app);
@@ -41,6 +49,13 @@ const MeetingEventList = () => {
     });
   };
 
+  const onDeleteMeetingEvent = async (event) => {
+    await deleteDoc(doc(db, "MeetingEvent", event?.id)).then(() => {
+      toast.success("Meeting Event Deleted Successfully");
+    });
+    getEventList();
+  };
+
   return (
     <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
       {eventList.length > 0 ? (
@@ -51,7 +66,23 @@ const MeetingEventList = () => {
             style={{ borderTopColor: event?.themeColor }}
           >
             <div className="flex justify-end">
-              <Settings className="cursor-pointer" />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Settings className="cursor-pointer" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem className="flex gap-2">
+                    <Pen /> Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex gap-2"
+                    onClick={() => onDeleteMeetingEvent(event)}
+                  >
+                    {" "}
+                    <Trash /> Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             <h2 className="font-medium text-xl">{event?.eventName}</h2>
             <div className="flex justify-between">
