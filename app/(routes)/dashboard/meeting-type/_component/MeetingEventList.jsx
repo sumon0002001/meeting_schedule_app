@@ -33,6 +33,7 @@ const MeetingEventList = () => {
 
   useEffect(() => {
     user && getEventList();
+    user && getBusinessInfo();
   }, [user]);
 
   const getEventList = async () => {
@@ -47,6 +48,26 @@ const MeetingEventList = () => {
       console.log(doc.id, " => ", doc.data());
       setEventList((prev) => [...prev, doc.data()]);
     });
+  };
+
+  const getBusinessInfo = async () => {
+    const docRef = doc(db, "Business", user?.email);
+    const docSnap = await getDoc(docRef);
+    const result = docSnap.data();
+    console.log(result);
+    setBusinessInfo(result);
+  };
+
+  const onCopyClickHandler = (event) => {
+    const meetingEventUrl =
+      process.env.NEXT_PUBLIC_BASE_URL +
+      "/" +
+      businessInfo.businessName +
+      "/" +
+      event.id;
+    navigator.clipboard.writeText(meetingEventUrl);
+    toast("Link Copied", "success");
+    console.log("link is copied");
   };
 
   const onDeleteMeetingEvent = async (event) => {
@@ -101,9 +122,7 @@ const MeetingEventList = () => {
                 className="flex gap-2 text-sm text-primary 
                     items-center cursor-pointer"
                 onClick={() => {
-                  navigator.clipboard.writeText(event.locationUrl);
-                  toast("Link Copied", "success");
-                  console.log("link is copied");
+                  onCopyClickHandler(event);
                 }}
               >
                 <Copy className="h-4 w-4" />

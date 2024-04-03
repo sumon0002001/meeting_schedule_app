@@ -4,9 +4,16 @@ import React, { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getFirestore } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  updateDoc,
+} from "firebase/firestore";
 import { app } from "@/config/FirebaseConfig";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { toast } from "sonner";
 
 const Availability = () => {
   const [daysAvailable, setDaysAvailable] = useState(
@@ -38,9 +45,36 @@ const Availability = () => {
   const db = getFirestore(app);
   const { user } = useKindeBrowserClient();
 
+  useEffect(() => {
+    user && getBusinessInfo()
+  }, [user]);
+
+  const getBusinessInfo = async () => {
+    const docRef = doc(db, "Business", user?.email);
+    const docSnap = await getDoc(docRef);
+    const result = docSnap.data();
+    setDaysAvailable(result.daysAvailable);
+    setStartTime(result.startTime);
+    setEndTime(result.endTime);
+  };
+
+  const onHandleChange = (day, value) => {
+    setDaysAvailable({
+      ...daysAvailable,
+      [day]: value,
+    });
+  };
+
   const handleSaveData = async () => {
     console.log(daysAvailable, startTime, endTime);
-    const 
+    const docRef = doc(db, "Business", user?.email);
+    await updateDoc(docRef, {
+      daysAvailable: daysAvailable,
+      startTime: startTime,
+      endTime: endTime,
+    }).then((response) => {
+      toast.success("Data updated successfully!");
+    });
   };
   return (
     <div className="p-10">
@@ -58,7 +92,7 @@ const Availability = () => {
                       ? daysAvailable[item?.day]
                       : false
                   }
-                  onCheckedChange={(e) => console.log(e)}
+                  onCheckedChange={(e) => onHandleChange(item.day, e)}
                 />{" "}
                 {item.day}
               </h2>
@@ -71,11 +105,19 @@ const Availability = () => {
         <div className="flex gap-10">
           <div className="mt-3">
             <h2>Start Time</h2>
-            <Input type="time" />
+            <Input
+              type="time"
+              defaultValue={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            />
           </div>
           <div className="mt-3">
             <h2>End Time</h2>
-            <Input type="time" />
+            <Input
+              type="time"
+              defaultValue={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
           </div>
         </div>
       </div>
