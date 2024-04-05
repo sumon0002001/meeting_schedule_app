@@ -31,7 +31,7 @@ const TimeDateSelection = ({
             className="border-primary text-primary"
             variant="outline"
             disabled={!enableTimeSlot}
-            onClick={() => setSelectedTime(date, timeSlot)}
+            onClick={() => setSelectedTime(timeSlot)}
           >
             {timeSlot}
           </Button>

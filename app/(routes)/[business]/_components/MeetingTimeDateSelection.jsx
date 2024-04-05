@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Clock, MapPin, CalendarCheck } from "lucide-react";
+import { Clock, MapPin, CalendarCheck, Timer } from "lucide-react";
 import Link from "next/link";
+import UserFormInfo from "./UserFormInfo";
 
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import TimeDateSelection from "./TimeDateSelection";
+import { toast } from "sonner";
+import { doc, setDoc } from "firebase/firestore";
 
 const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
   const [date, setDate] = useState(new Date());
   const [timeSlots, setTimeSlots] = useState();
   const [enableTimeSlot, setEnableTimeSlot] = useState(false);
-  const [selectedTime,setSelectedTime] = useState()
+  const [selectedTime, setSelectedTime] = useState();
+  const [step, setStep] = useState(1);
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userNote, setUserNote] = useState("");
 
   useEffect(() => {
     eventInfo?.duration && createTimeSlot(eventInfo?.duration);
@@ -45,6 +52,28 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
     }
   };
 
+  const handleScheduleEvent = async () => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (regex.test(userEmail) === false) {
+      toast("please enter valid email address");
+      return;
+    }
+    const docId = Date.now().toString();
+    await setDoc(doc(db, "ScheduledMetting", docId), {
+      businessName: businessInfo.businessName,
+      businessEmail: businessInfo.email,
+      selectedTime: businessInfo.selectedTime,
+      selectedDate: date,
+      duration: eventInfo.duration,
+      locationUrl: eventInfo.locationUrl,
+      eventId: eventInfo.id,
+      id: docId,
+      userName: userName,
+      userEmail: userEmail,
+      userNote: userNote,
+    });
+  };
+
   return (
     <div
       className="p-5 py-5 shadow-lg m-5 border-t-8 mx-10 md:mx-25 lg:mx-56 my-10"
@@ -74,6 +103,19 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
               <CalendarCheck />
               {format(date, "PPP")}
             </h2>
+
+            {selectedTime && (
+              <h2 className="flex gap-2">
+                <Timer />
+                {selectedTime}
+              </h2>
+            )}
+
+            {/* <h2 className="flex gap-2">
+              <Timer />
+              {selectedTime}{" "}
+            </h2> */}
+
             <Link
               href={eventInfo?.locationUrl ? eventInfo?.locationUrl : "#"}
               className="text-primary"
@@ -84,13 +126,45 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
         </div>
         {/* Time and date info */}
 
-        <TimeDateSelection
-          date={date}
-          timeSlots={timeSlots}
-          handleDateChange={handleDateChange}
-          enableTimeSlot={enableTimeSlot}
-          setSelectedTime={setSelectedTime}
-        />
+        {step === 1 ? (
+          <TimeDateSelection
+            date={date}
+            enableTimeSlot={enableTimeSlot}
+            handleDateChange={handleDateChange}
+            setSelectedTime={setSelectedTime}
+            timeSlots={timeSlots}
+            selectedTime={selectedTime}
+          />
+        ) : (
+          <UserFormInfo
+            setUserName={setUserName}
+            setUserEmail={setUserEmail}
+            setUserNote={setUserNote}
+          />
+        )}
+      </div>
+      <div className="flex gap-3 justify-end">
+        {step == 2 && (
+          <Button variant="outline" onClick={() => setStep(1)}>
+            Back
+          </Button>
+        )}
+        {step == 1 ? (
+          <Button
+            className="mt-10 float-right"
+            disabled={!selectedTime || !date}
+            onClick={() => setStep(step + 1)}
+          >
+            Next
+          </Button>
+        ) : (
+          <Button
+            disabled={!userName || !userEmail}
+            onClick={handleScheduleEvent}
+          >
+            Schedule
+          </Button>
+        )}
       </div>
     </div>
   );
