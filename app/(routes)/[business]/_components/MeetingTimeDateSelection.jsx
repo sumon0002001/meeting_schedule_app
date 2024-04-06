@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import TimeDateSelection from "./TimeDateSelection";
 import { toast } from "sonner";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { app } from "@/config/FirebaseConfig";
 
 const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
   const [date, setDate] = useState(new Date());
@@ -20,6 +21,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [userNote, setUserNote] = useState("");
+  const db = getFirestore(app);
 
   useEffect(() => {
     eventInfo?.duration && createTimeSlot(eventInfo?.duration);
@@ -47,6 +49,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
     const day = format(date, "EEEE");
     if (businessInfo?.daysAvailable?.[day]) {
       setEnableTimeSlot(true);
+      getPreviouseBooking();
     } else {
       setEnableTimeSlot(false);
     }
@@ -59,11 +62,13 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
       return;
     }
     const docId = Date.now().toString();
-    await setDoc(doc(db, "ScheduledMetting", docId), {
+    await setDoc(doc(db, "ScheduledMeeting", docId), {
       businessName: businessInfo.businessName,
       businessEmail: businessInfo.email,
-      selectedTime: businessInfo.selectedTime,
+      selectedTime: selectedTime,
       selectedDate: date,
+      formatedDate: format(date, "PPP"),
+      formatedTimeStamp: format(date, "t"),
       duration: eventInfo.duration,
       locationUrl: eventInfo.locationUrl,
       eventId: eventInfo.id,
@@ -71,7 +76,18 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
       userName: userName,
       userEmail: userEmail,
       userNote: userNote,
+    }).then((response) => {
+      toast("Event scheduled successfully");
     });
+  };
+
+  /**
+   * Used to Fetch Previous Booking for given event
+   * @param {*} date_
+   */
+
+  const getPreviouseBooking = () => {
+    alert("got booking");
   };
 
   return (

@@ -6,7 +6,7 @@ const TimeDateSelection = ({
   date,
   timeSlots,
   handleDateChange,
-
+  selectedTime,
   enableTimeSlot,
   setSelectedTime,
 }) => {
@@ -28,7 +28,10 @@ const TimeDateSelection = ({
       >
         {timeSlots?.map((timeSlot, index) => (
           <Button
-            className="border-primary text-primary"
+            className={`border-primary
+          text-primary
+          ${timeSlot == selectedTime && "bg-primary text-white"}
+          `}
             variant="outline"
             disabled={!enableTimeSlot}
             onClick={() => setSelectedTime(timeSlot)}
