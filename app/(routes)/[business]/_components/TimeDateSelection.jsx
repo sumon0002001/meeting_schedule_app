@@ -9,7 +9,11 @@ const TimeDateSelection = ({
   selectedTime,
   enableTimeSlot,
   setSelectedTime,
+  prevBooking,
 }) => {
+  const checkTimeSlot = (time) => {
+    return prevBooking.filter((item) => item.selectedTime == time).length > 0;
+  };
   return (
     <div className="md:col-span-2 flex px-4">
       <div className="flex flex-col">
@@ -26,17 +30,17 @@ const TimeDateSelection = ({
         className="flex flex-col w-full overflow-auto gap-4 p-5"
         style={{ maxHeight: "400px" }}
       >
-        {timeSlots?.map((timeSlot, index) => (
+        {timeSlots?.map((time, index) => (
           <Button
+            disabled={!enableTimeSlot || checkTimeSlot(time)}
+            onClick={() => setSelectedTime(time)}
             className={`border-primary
-          text-primary
-          ${timeSlot == selectedTime && "bg-primary text-white"}
-          `}
+             text-primary
+             ${time == selectedTime && "bg-primary text-white"}
+             `}
             variant="outline"
-            disabled={!enableTimeSlot}
-            onClick={() => setSelectedTime(timeSlot)}
           >
-            {timeSlot}
+            {time}
           </Button>
         ))}
       </div>

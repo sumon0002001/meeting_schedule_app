@@ -4,12 +4,19 @@ import { Clock, MapPin, CalendarCheck, Timer } from "lucide-react";
 import Link from "next/link";
 import UserFormInfo from "./UserFormInfo";
 
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import TimeDateSelection from "./TimeDateSelection";
 import { toast } from "sonner";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getFirestore,
+  setDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { app } from "@/config/FirebaseConfig";
 
 const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
@@ -21,6 +28,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [userNote, setUserNote] = useState("");
+  const [prevBooking, setPrevBooking] = useState([]);
   const db = getFirestore(app);
 
   useEffect(() => {
@@ -48,8 +56,8 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
     setDate(date);
     const day = format(date, "EEEE");
     if (businessInfo?.daysAvailable?.[day]) {
+      getPrevEventBooking(date);
       setEnableTimeSlot(true);
-      getPreviouseBooking();
     } else {
       setEnableTimeSlot(false);
     }
@@ -86,10 +94,34 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
    * @param {*} date_
    */
 
-  const getPreviouseBooking = () => {
-    alert("got booking");
-  };
+  // const getPreviouseBooking = async (date_) => {
+  //   const q = query(
+  //     collection(db, "ScheduledMeeting"),
+  //     where("selectedDate", "==", date_),
+  //     where("eventId", "==", eventInfo.id)
+  //   );
+  //   const docSnap = await getDocs(q);
+  //   const bookedSlots = [];
+  //   docSnap.forEach((doc) => {
+  //     // bookedSlots.push(doc.data().selectedTime);
+  //     console.log("---", doc.data);
+  //   });
+  //   // setTimeSlots(timeSlots.filter((slot) => !bookedSlots.includes(slot)));
+  // };
+  const getPrevEventBooking = async (date_) => {
+    const q = query(
+      collection(db, "ScheduledMeeting"),
+      where("selectedDate", "==", date_),
+      where("eventId", "==", eventInfo?.id)
+    );
 
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+      console.log("--", doc.data());
+      setPrevBooking((prev) => [...prev, doc.data()]);
+    });
+  };
   return (
     <div
       className="p-5 py-5 shadow-lg m-5 border-t-8 mx-10 md:mx-25 lg:mx-56 my-10"
@@ -117,7 +149,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
             </h2>
             <h2 className="flex gap-2">
               <CalendarCheck />
-              {format(date, "PPP")}
+              {format(date,'PPP')}  
             </h2>
 
             {selectedTime && (
@@ -150,6 +182,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
             setSelectedTime={setSelectedTime}
             timeSlots={timeSlots}
             selectedTime={selectedTime}
+            prevBooking={prevBooking}
           />
         ) : (
           <UserFormInfo
