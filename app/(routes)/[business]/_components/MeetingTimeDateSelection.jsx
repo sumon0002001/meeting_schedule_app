@@ -3,7 +3,8 @@ import Image from "next/image";
 import { Clock, MapPin, CalendarCheck, Timer } from "lucide-react";
 import Link from "next/link";
 import UserFormInfo from "./UserFormInfo";
-
+import Plunk from "@plunk/node";
+import { render } from "@react-email/render";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import TimeDateSelection from "./TimeDateSelection";
@@ -18,6 +19,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { app } from "@/config/FirebaseConfig";
+import Email from "@/emails";
 
 const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
   const [date, setDate] = useState(new Date());
@@ -29,7 +31,9 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
   const [userName, setUserName] = useState("");
   const [userNote, setUserNote] = useState("");
   const [prevBooking, setPrevBooking] = useState([]);
+  const [loading, setLoading] = useState(false);
   const db = getFirestore(app);
+  const plunk = new Plunk(process.env.NEXT_PUBLIC_PLUNK_API_KEY);
 
   useEffect(() => {
     eventInfo?.duration && createTimeSlot(eventInfo?.duration);
@@ -86,7 +90,32 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
       userNote: userNote,
     }).then((response) => {
       toast("Event scheduled successfully");
+      sendEmail(userName);
     });
+  };
+
+  const sendEmail = (user) => {
+    const emailHtml = render(
+      <Email
+        businessName={businessInfo?.businessName}
+        date={format(date, "PPP").toString()}
+        duration={eventInfo?.duration}
+        meetingTime={selectedTime}
+        meetingUrl={eventInfo.locationUrl}
+        userFirstName={user}
+      />
+    );
+
+    plunk.emails
+      .send({
+        to: userEmail,
+        subject: "Meeting Schedule Details",
+        body: emailHtml,
+      })
+      .then((resp) => {
+        console.log(resp);
+        setLoading(false);
+      });
   };
 
   /**
@@ -149,7 +178,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
             </h2>
             <h2 className="flex gap-2">
               <CalendarCheck />
-              {format(date,'PPP')}  
+              {format(date, "PPP")}
             </h2>
 
             {selectedTime && (
