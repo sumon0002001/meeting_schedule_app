@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import TimeDateSelection from "./TimeDateSelection";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import {
   doc,
   getFirestore,
@@ -32,6 +33,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
   const [userNote, setUserNote] = useState("");
   const [prevBooking, setPrevBooking] = useState([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const db = getFirestore(app);
   const plunk = new Plunk(process.env.NEXT_PUBLIC_PLUNK_API_KEY);
 
@@ -79,7 +81,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
       businessEmail: businessInfo.email,
       selectedTime: selectedTime,
       selectedDate: date,
-      formatedDate: format(date, "PPP"),
+      formatedDate: format(date, "PPP").toString(),
       formatedTimeStamp: format(date, "t"),
       duration: eventInfo.duration,
       locationUrl: eventInfo.locationUrl,
@@ -115,6 +117,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
       .then((resp) => {
         console.log(resp);
         setLoading(false);
+        router.push("/confirmation");
       });
   };
 
@@ -178,7 +181,7 @@ const MeetingTimeDateSelection = ({ eventInfo, businessInfo }) => {
             </h2>
             <h2 className="flex gap-2">
               <CalendarCheck />
-              {format(date, "PPP")}
+              {format(date, "PPP").toString()}
             </h2>
 
             {selectedTime && (
